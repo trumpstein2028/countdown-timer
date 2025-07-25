@@ -152,7 +152,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="title">Countdown Timer</h1>
+        <h1 class="title">2028 Presidential Election Countdown</h1>
         
         <div class="countdown">
             <div class="time-unit">
@@ -173,115 +173,67 @@
             </div>
         </div>
 
-        <div class="controls">
-            <div class="control-group">
-                <label>Days</label>
-                <input type="number" id="inputDays" placeholder="0" min="0">
-            </div>
-            <div class="control-group">
-                <label>Hours</label>
-                <input type="number" id="inputHours" placeholder="0" min="0" max="23">
-            </div>
-            <div class="control-group">
-                <label>Minutes</label>
-                <input type="number" id="inputMinutes" placeholder="0" min="0" max="59">
-            </div>
-            <div class="control-group">
-                <label>Seconds</label>
-                <input type="number" id="inputSeconds" placeholder="0" min="0" max="59">
-            </div>
-        </div>
 
-        <div class="controls">
-            <button onclick="startTimer()">Start</button>
-            <button onclick="pauseTimer()">Pause</button>
-            <button onclick="resetTimer()">Reset</button>
-        </div>
 
-        <div class="preset-buttons">
-            <button onclick="setPreset(1, 0, 0, 0)">1 Day</button>
-            <button onclick="setPreset(0, 1, 0, 0)">1 Hour</button>
-            <button onclick="setPreset(0, 0, 10, 0)">10 Min</button>
-            <button onclick="setPreset(0, 0, 5, 0)">5 Min</button>
-            <button onclick="setPreset(0, 0, 1, 0)">1 Min</button>
+        <div style="text-align: center; margin-top: 1rem; opacity: 0.8; font-size: 1.1rem;">
+            November 5, 2028 • Election Day
         </div>
     </div>
 
     <script>
+        // Target date: November 5, 2028 (Election Day - first Tuesday after first Monday in November)
+        const targetDate = new Date('November 5, 2028 00:00:00').getTime();
+        
         let countdownInterval;
-        let totalSeconds = 0;
-        let isRunning = false;
 
-        function updateDisplay() {
-            const days = Math.floor(totalSeconds / (24 * 3600));
-            const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const timeRemaining = targetDate - now;
 
-            document.getElementById('days').textContent = String(days).padStart(2, '0');
-            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            if (timeRemaining > 0) {
+                const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+                document.getElementById('days').textContent = String(days).padStart(3, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            } else {
+                // Election day has arrived
+                document.getElementById('days').textContent = '000';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
+                
+                document.querySelector('.title').textContent = 'Election Day is Here!';
+                clearInterval(countdownInterval);
+            }
         }
 
-        function startTimer() {
-            if (!isRunning) {
-                // Get values from inputs if timer is not running
-                const days = parseInt(document.getElementById('inputDays').value) || 0;
-                const hours = parseInt(document.getElementById('inputHours').value) || 0;
-                const minutes = parseInt(document.getElementById('inputMinutes').value) || 0;
-                const seconds = parseInt(document.getElementById('inputSeconds').value) || 0;
-                
-                if (totalSeconds === 0) {
-                    totalSeconds = days * 24 * 3600 + hours * 3600 + minutes * 60 + seconds;
-                }
-            }
+        // Start the countdown immediately
+        updateCountdown();
+        countdownInterval = setInterval(updateCountdown, 1000);
 
-            if (totalSeconds > 0) {
-                isRunning = true;
-                countdownInterval = setInterval(() => {
-                    totalSeconds--;
-                    updateDisplay();
-                    
-                    if (totalSeconds <= 0) {
-                        clearInterval(countdownInterval);
-                        isRunning = false;
-                        alert('Time\'s up!');
-                    }
-                }, 1000);
-            }
+        // Remove the manual controls since this is automatic
+        function startTimer() {
+            // Already running automatically
         }
 
         function pauseTimer() {
-            if (isRunning) {
-                clearInterval(countdownInterval);
-                isRunning = false;
-            }
+            clearInterval(countdownInterval);
         }
 
         function resetTimer() {
             clearInterval(countdownInterval);
-            isRunning = false;
-            totalSeconds = 0;
-            updateDisplay();
-            
-            // Clear input fields
-            document.getElementById('inputDays').value = '';
-            document.getElementById('inputHours').value = '';
-            document.getElementById('inputMinutes').value = '';
-            document.getElementById('inputSeconds').value = '';
+            countdownInterval = setInterval(updateCountdown, 1000);
+            updateCountdown();
         }
 
         function setPreset(days, hours, minutes, seconds) {
-            resetTimer();
-            document.getElementById('inputDays').value = days || '';
-            document.getElementById('inputHours').value = hours || '';
-            document.getElementById('inputMinutes').value = minutes || '';
-            document.getElementById('inputSeconds').value = seconds || '';
+            // Disabled for election countdown
         }
-
-        // Initialize display
-        updateDisplay();
     </script>
 </body>
 </html>
